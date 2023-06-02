@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": "lib",
     "target": "ES2020",
-    "module": "commonjs",
+    "module": "CommonJS",
     "lib": [
-      "es2020"
+      "ES2020"
     ],
     "declaration": true,
     "strict": true,
@@ -19,12 +20,11 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
+    "moduleResolution":"node", // Not really understood all errors coming from removing this line
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "outDir": "dist"
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "include": ["lib/**/*"]
 }
