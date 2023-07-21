@@ -14,7 +14,7 @@ export class LambdaHttpInterceptor extends Construct {
   constructor(
     scope: Construct,
     id: string,
-    props: LambdaHttpInterceptorProps = {}
+    props: LambdaHttpInterceptorProps = {},
   ) {
     super(scope, id);
 
