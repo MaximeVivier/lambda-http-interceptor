@@ -8,7 +8,8 @@
     "build": "rm -rf dist && tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "deploy-test-stack": "cd test; cdk deploy"
+    "deploy-test-stack": "cd test; cdk deploy",
+    "synth-test-stack": "cd test; cdk synth"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.30.1",
