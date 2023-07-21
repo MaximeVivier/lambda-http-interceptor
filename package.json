@@ -5,7 +5,8 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc && pnpm build:interceptor",
+    "build:interceptor": "./node_modules/.bin/esbuild --bundle --platform=node --main-fields=module,main --sourcemap lib/layer/interceptor.ts --outfile='./dist/layer/interceptor.js'",
     "watch": "tsc -w",
     "test": "jest",
     "deploy-test-stack": "cd test; cdk deploy",

@@ -20,7 +20,9 @@
     "strictPropertyInitialization": false,
     "moduleResolution": "node", // Not really understood all errors coming from removing this line
     "typeRoots": ["./node_modules/@types"],
-    "outDir": "dist"
+    "outDir": "dist",
+    "skipLibCheck": true
   },
-  "include": ["lib/**/*"]
+  "include": ["lib/**/*"],
+  "exclude": ["lib/layer/**/*"]
 }
