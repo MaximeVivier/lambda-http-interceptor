@@ -28,7 +28,8 @@
     "typescript": "~4.9.5"
   },
   "dependencies": {
-    "@swarmion/serverless-helpers": "^0.28.2"
+    "@swarmion/serverless-helpers": "^0.28.2",
+    "msw": "^1.2.3"
   },
   "packageManager": "pnpm@8.4.0",
   "peerDependencies": {
