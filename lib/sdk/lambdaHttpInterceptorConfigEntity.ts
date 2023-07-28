@@ -8,7 +8,7 @@ import {
   any,
   record,
   list,
-  FormattedItem,
+  PutItemInput,
 } from "dynamodb-toolbox";
 
 import { lambdaHttpInterceptorTable } from "./table";
@@ -30,7 +30,7 @@ const lambdaHttpInterceptorConfigSchema = schema({
         body: string().optional(),
         statusText: string().optional(),
       }),
-    })
+    }),
   ),
 });
 
@@ -40,6 +40,6 @@ export const lambdaHttpInterceptorConfigEntity = new EntityV2({
   schema: lambdaHttpInterceptorConfigSchema,
 });
 
-export type LambdaHttpInterceptorConfig = FormattedItem<
+export type LambdaHttpInterceptorConfig = PutItemInput<
   typeof lambdaHttpInterceptorConfigEntity
 >;
