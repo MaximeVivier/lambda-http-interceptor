@@ -3,9 +3,7 @@
     "baseUrl": "lib",
     "target": "ES2020",
     "module": "CommonJS",
-    "lib": [
-      "ES2020"
-    ],
+    "lib": ["ES2020"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -20,11 +18,11 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "moduleResolution":"node", // Not really understood all errors coming from removing this line
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
-    "outDir": "dist"
+    "moduleResolution": "node", // Not really understood all errors coming from removing this line
+    "typeRoots": ["./node_modules/@types"],
+    "outDir": "dist",
+    "skipLibCheck": true
   },
-  "include": ["lib/**/*"]
+  "include": ["lib/**/*"],
+  "exclude": ["lib/layer/**/*"]
 }

@@ -6,3 +6,5 @@ cdk.out
 
 # Compiled sources
 dist
+
+testEnvVarsCache.json
