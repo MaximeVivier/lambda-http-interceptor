@@ -3,10 +3,7 @@ import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 import { Construct } from "constructs";
-import {
-  HttpInterceptorExtension,
-  applyNodejsInternalExtension,
-} from "../dist"; // We need to use build package here to have the correct link to layer code -> The code must be built between two tests
+import { HttpInterceptor, applyNodejsInternalExtension } from "../dist"; // We need to use build package here to have the correct link to layer code -> The code must be built between two tests
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { getCdkHandlerPath } from "@swarmion/serverless-helpers";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
@@ -22,6 +19,8 @@ export class LambdaHttpInterceptorTestStack extends Stack {
       value: httpApi.url as string,
     });
 
+    const interceptor = new HttpInterceptor(this, "HttpInterceptor");
+
     const makeExternalCallFunction = new NodejsFunction(
       this,
       "MakeExternalCalls",
@@ -36,7 +35,7 @@ export class LambdaHttpInterceptorTestStack extends Stack {
     );
     applyNodejsInternalExtension(
       makeExternalCallFunction,
-      new HttpInterceptorExtension(this, "InterceptorExtension"),
+      interceptor.extension,
     );
 
     const makeExternalCallIntegration = new HttpLambdaIntegration(
