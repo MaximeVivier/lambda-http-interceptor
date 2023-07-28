@@ -21,6 +21,10 @@ export class LambdaHttpInterceptorTestStack extends Stack {
 
     const interceptor = new HttpInterceptor(this, "HttpInterceptor");
 
+    new TestEnvVar(this, "HTTP_INTERCEPTOR_TABLE_NAME", {
+      value: interceptor.table.tableName,
+    });
+
     const makeExternalCallFunction = new NodejsFunction(
       this,
       "MakeExternalCalls",
@@ -37,6 +41,10 @@ export class LambdaHttpInterceptorTestStack extends Stack {
       makeExternalCallFunction,
       interceptor.extension,
     );
+
+    new TestEnvVar(this, "MAKE_EXTERNAL_CALLS_FUNCTION_NAME", {
+      value: makeExternalCallFunction.functionName,
+    });
 
     const makeExternalCallIntegration = new HttpLambdaIntegration(
       "MakeExternalCallsIntegration",
