@@ -34,12 +34,16 @@
     "vitest": "^0.33.0"
   },
   "dependencies": {
+    "msw": "^1.2.3",
+    "@aws-sdk/client-dynamodb": "^3.363.0",
+    "@aws-sdk/lib-dynamodb": "^3.365.0",
     "@swarmion/serverless-helpers": "^0.28.2",
-    "msw": "^1.2.3"
+    "dynamodb-toolbox": "1.0.0-beta.0"
   },
   "packageManager": "pnpm@8.4.0",
   "peerDependencies": {
     "aws-cdk-lib": "^2.72.1",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "msw": "^1.2.2"
   }
 }
