@@ -8,6 +8,7 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { getCdkHandlerPath } from "@swarmion/serverless-helpers";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { TestEnvVar } from "@swarmion/integration-tests";
+import { HTTP_INTERCEPTOR_TABLE_NAME } from "../lib/sdk";
 
 export class LambdaHttpInterceptorTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -34,6 +35,7 @@ export class LambdaHttpInterceptorTestStack extends Stack {
         entry: getCdkHandlerPath(__dirname),
         environment: {
           NODE_OPTIONS: "--enable-source-maps",
+          [HTTP_INTERCEPTOR_TABLE_NAME]: interceptor.table.tableName,
         },
       },
     );
@@ -41,6 +43,7 @@ export class LambdaHttpInterceptorTestStack extends Stack {
       makeExternalCallFunction,
       interceptor.extension,
     );
+    interceptor.table.grantReadData(makeExternalCallFunction);
 
     new TestEnvVar(this, "MAKE_EXTERNAL_CALLS_FUNCTION_NAME", {
       value: makeExternalCallFunction.functionName,
