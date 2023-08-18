@@ -8,7 +8,7 @@ describe("hello function", () => {
   it("returns a 200", async () => {
     await setupLambdaHttpInterceptorConfig({
       lambdaName: TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
-      config: [
+      mockConfigs: [
         {
           url: "https://api.coindesk.com/*",
           response: {

@@ -16,7 +16,7 @@ import { lambdaHttpInterceptorTable } from "./table";
 const lambdaHttpInterceptorConfigSchema = schema({
   lambdaName: string().key().savedAs("PK"),
   entityName: string().key().const("lambdaHttpInterceptorConfig").savedAs("SK"),
-  config: list(
+  mockConfigs: list(
     map({
       url: string().optional(),
       method: string().optional(),
