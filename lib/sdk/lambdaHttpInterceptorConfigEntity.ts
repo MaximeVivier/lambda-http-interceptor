@@ -24,7 +24,7 @@ const lambdaHttpInterceptorConfigSchema = schema({
       headers: record(string(), string()).optional(),
       queryParams: record(string(), string()).optional(),
       response: map({
-        status: number(),
+        status: number().optional(),
         passThrough: boolean().optional(),
         headers: record(string(), any()).optional(),
         body: string().optional(),
