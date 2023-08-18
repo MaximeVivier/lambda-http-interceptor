@@ -16,7 +16,7 @@ export class HttpInterceptor extends Construct {
 
     this.table = new Table(this, LAMBDA_HTTP_INTERCEPTOR_TABLE_NAME, {
       partitionKey: { name: PARTITION_KEY, type: AttributeType.STRING },
-      sortKey: { name: SORT_KEY, type: AttributeType.NUMBER },
+      sortKey: { name: SORT_KEY, type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       tableName: LAMBDA_HTTP_INTERCEPTOR_TABLE_NAME,
     });
