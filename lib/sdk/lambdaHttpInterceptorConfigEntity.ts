@@ -14,6 +14,9 @@ import {
 } from "dynamodb-toolbox";
 
 import { lambdaHttpInterceptorTable } from "./table";
+import { TTL_ATTRIBUTE_NAME } from "../constants";
+
+const oneHourInSeconds = 3600;
 
 const lambdaHttpInterceptorConfigSchema = schema({
   lambdaName: string().key().savedAs("PK"),
@@ -36,7 +39,10 @@ const lambdaHttpInterceptorConfigSchema = schema({
           body: string().optional(),
         }),
       ]),
-    }),
+    })
+  ),
+  [TTL_ATTRIBUTE_NAME]: number().default(
+    () => Math.ceil(new Date().getTime() / 1000) + oneHourInSeconds
   ),
 });
 
