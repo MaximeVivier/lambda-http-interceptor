@@ -20,6 +20,7 @@
     "@swarmion/integration-tests": "^0.28.2",
     "@swarmion/serverless-helpers": "^0.28.2",
     "@types/aws-lambda": "^8.10.115",
+    "@types/debug": "^4.1.8",
     "@types/node": "18.14.6",
     "aws-cdk": "^2.88.0",
     "aws-cdk-lib": "^2.88.0",
@@ -34,11 +35,12 @@
     "vitest": "^0.33.0"
   },
   "dependencies": {
-    "msw": "^1.2.3",
     "@aws-sdk/client-dynamodb": "^3.363.0",
     "@aws-sdk/lib-dynamodb": "^3.365.0",
     "@swarmion/serverless-helpers": "^0.28.2",
-    "dynamodb-toolbox": "1.0.0-beta.0"
+    "debug": "^4.3.4",
+    "dynamodb-toolbox": "1.0.0-beta.0",
+    "msw": "^1.2.3"
   },
   "packageManager": "pnpm@8.4.0",
   "peerDependencies": {
