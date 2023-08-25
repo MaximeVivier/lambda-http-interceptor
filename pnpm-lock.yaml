@@ -10,6 +10,9 @@ dependencies:
   '@swarmion/serverless-helpers':
     specifier: ^0.28.2
     version: 0.28.2(@serverless/typescript@3.30.1)(aws-cdk-lib@2.88.0)
+  debug:
+    specifier: ^4.3.4
+    version: 4.3.4
   dynamodb-toolbox:
     specifier: 1.0.0-beta.0
     version: 1.0.0-beta.0(@aws-sdk/client-dynamodb@3.379.1)(@aws-sdk/lib-dynamodb@3.379.1)
@@ -33,6 +36,9 @@ devDependencies:
   '@types/aws-lambda':
     specifier: ^8.10.115
     version: 8.10.115
+  '@types/debug':
+    specifier: ^4.1.8
+    version: 4.1.8
   '@types/node':
     specifier: 18.14.6
     version: 18.14.6
@@ -2892,7 +2898,6 @@ packages:
     resolution: {integrity: sha512-/vPO1EPOs306Cvhwv7KfVfYvOJqA/S/AXjaHQiJboCZzcNDb+TIJFN9/2C9DZ//ijSKWioNyUxD792QmDJ+HKQ==}
     dependencies:
       '@types/ms': 0.7.31
-    dev: false
 
   /@types/graceful-fs@4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
@@ -2926,7 +2931,6 @@ packages:
 
   /@types/ms@0.7.31:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
-    dev: false
 
   /@types/node@18.14.6:
     resolution: {integrity: sha512-93+VvleD3mXwlLI/xASjw0FzKcwzl3OdTCzm1LaRfqgS21gfFtK3zDXM5Op9TeeMsJVOaJ2VRDpT9q4Y3d0AvA==}

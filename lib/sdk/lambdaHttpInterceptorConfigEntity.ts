@@ -5,10 +5,12 @@ import {
   map,
   boolean,
   number,
-  any,
   record,
   list,
+  anyOf,
+  PutItemInput,
   FormattedItem,
+  PutItemCommand,
 } from "dynamodb-toolbox";
 
 import { lambdaHttpInterceptorTable } from "./table";
@@ -16,21 +18,25 @@ import { lambdaHttpInterceptorTable } from "./table";
 const lambdaHttpInterceptorConfigSchema = schema({
   lambdaName: string().key().savedAs("PK"),
   entityName: string().key().const("lambdaHttpInterceptorConfig").savedAs("SK"),
-  config: list(
+  mockConfigs: list(
     map({
       url: string().optional(),
       method: string().optional(),
       body: string().optional(),
       headers: record(string(), string()).optional(),
       queryParams: record(string(), string()).optional(),
-      response: map({
-        status: number(),
-        passThrough: boolean().optional(),
-        headers: record(string(), any()).optional(),
-        body: string().optional(),
-        statusText: string().optional(),
-      }),
-    })
+      response: anyOf([
+        map({
+          passThrough: boolean().enum(true),
+        }),
+        map({
+          passThrough: boolean().enum(false).optional(),
+          status: number(),
+          headers: record(string(), string()).optional(),
+          body: string().optional(),
+        }),
+      ]),
+    }),
   ),
 });
 
@@ -39,6 +45,10 @@ export const lambdaHttpInterceptorConfigEntity = new EntityV2({
   table: lambdaHttpInterceptorTable,
   schema: lambdaHttpInterceptorConfigSchema,
 });
+
+export type LambdaHttpInterceptorConfigInput = PutItemInput<
+  typeof lambdaHttpInterceptorConfigEntity
+>;
 
 export type LambdaHttpInterceptorConfig = FormattedItem<
   typeof lambdaHttpInterceptorConfigEntity
