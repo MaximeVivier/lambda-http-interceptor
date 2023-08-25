@@ -8,7 +8,6 @@ import {
   AWS_LAMBDA_FUNCTION_NAME,
   HTTP_INTERCEPTOR_TABLE_NAME,
   MockConfig,
-  responseIsResponse,
 } from "../sdk";
 
 const fetchInterceptorConfig = async (): Promise<MockConfig[] | undefined> => {
@@ -47,15 +46,15 @@ const server = setupServer(
 
     const response = getRequestResponse(request, mockConfigs);
 
-    if (response.passThrough || !responseIsResponse(response)) {
+    if (response.passThrough === true) {
       return req.passthrough();
     }
 
     const responseTransformers = [
       ctx.status(response.status),
       response.body && ctx.text(response.body),
-      ...Object.entries(response.headers ?? {}).map(([key, value]) =>
-        ctx.set(key, value),
+      ...Object.entries(response.headers ?? {}).map(
+        ([key, value]) => value && ctx.set(key, value),
       ),
     ].filter((transformer): transformer is ResponseTransformer =>
       Boolean(transformer),

@@ -5,10 +5,12 @@ import {
   map,
   boolean,
   number,
-  any,
   record,
   list,
+  anyOf,
   PutItemInput,
+  FormattedItem,
+  PutItemCommand,
 } from "dynamodb-toolbox";
 
 import { lambdaHttpInterceptorTable } from "./table";
@@ -23,13 +25,17 @@ const lambdaHttpInterceptorConfigSchema = schema({
       body: string().optional(),
       headers: record(string(), string()).optional(),
       queryParams: record(string(), string()).optional(),
-      response: map({
-        status: number().optional(),
-        passThrough: boolean().optional(),
-        headers: record(string(), any()).optional(),
-        body: string().optional(),
-        statusText: string().optional(),
-      }),
+      response: anyOf([
+        map({
+          passThrough: boolean().enum(true),
+        }),
+        map({
+          passThrough: boolean().enum(false).optional(),
+          status: number(),
+          headers: record(string(), string()).optional(),
+          body: string().optional(),
+        }),
+      ]),
     }),
   ),
 });
@@ -40,6 +46,10 @@ export const lambdaHttpInterceptorConfigEntity = new EntityV2({
   schema: lambdaHttpInterceptorConfigSchema,
 });
 
-export type LambdaHttpInterceptorConfig = PutItemInput<
+export type LambdaHttpInterceptorConfigInput = PutItemInput<
+  typeof lambdaHttpInterceptorConfigEntity
+>;
+
+export type LambdaHttpInterceptorConfig = FormattedItem<
   typeof lambdaHttpInterceptorConfigEntity
 >;

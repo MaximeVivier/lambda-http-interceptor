@@ -18,6 +18,12 @@ describe("hello function", () => {
             }),
           },
         },
+        {
+          url: "https://catfact.ninja/fact",
+          response: {
+            passThrough: true,
+          },
+        },
       ],
     });
     const response = await fetch(
