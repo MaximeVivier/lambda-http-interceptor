@@ -3,7 +3,7 @@ import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 import { Construct } from "constructs";
-import { HttpInterceptor, applyNodejsInternalExtension } from "../dist"; // We need to use build package here to have the correct link to layer code -> The code must be built between two tests
+import { HttpInterceptor, applyHttpInterceptor } from "../dist"; // We need to use build package here to have the correct link to layer code -> The code must be built between two tests
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { getCdkHandlerPath } from "@swarmion/serverless-helpers";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
@@ -35,15 +35,10 @@ export class LambdaHttpInterceptorTestStack extends Stack {
         entry: getCdkHandlerPath(__dirname),
         environment: {
           NODE_OPTIONS: "--enable-source-maps",
-          [HTTP_INTERCEPTOR_TABLE_NAME]: interceptor.table.tableName,
         },
       },
     );
-    applyNodejsInternalExtension(
-      makeExternalCallFunction,
-      interceptor.extension,
-    );
-    interceptor.table.grantReadData(makeExternalCallFunction);
+    applyHttpInterceptor(makeExternalCallFunction, interceptor);
 
     new TestEnvVar(this, "MAKE_EXTERNAL_CALLS_FUNCTION_NAME", {
       value: makeExternalCallFunction.functionName,

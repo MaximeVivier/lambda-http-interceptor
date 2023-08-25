@@ -1,3 +1,3 @@
-export * from "./applyNodejsInternalExtension";
+export * from "./applyHttpInterceptor";
 export * from "./HttpInterceptorExtension";
 export * from "./HttpInterceptor";

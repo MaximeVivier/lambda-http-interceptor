@@ -17,18 +17,29 @@ const getPreviousNodeOptions = (node: NodejsFunction): string | undefined => {
   }
   return env.variables?.NODE_OPTIONS;
 };
+
+export const applyNodejsInternalExtensionToNodeJsFunction = (
+  nodeJsFunction: NodejsFunction,
+  internalExtension: NodejsInternalExtension,
+): void => {
+  const previousNodeOptions = getPreviousNodeOptions(nodeJsFunction);
+  const requireExtensionOption = `--require /opt/${internalExtension.entryPoint}`;
+  const newNodeOptions = previousNodeOptions
+    ? [previousNodeOptions, requireExtensionOption].join(" ")
+    : requireExtensionOption;
+
+  nodeJsFunction.addEnvironment("NODE_OPTIONS", newNodeOptions);
+  nodeJsFunction.addLayers(internalExtension.layerVersion);
+};
+
 class NodejsInternalExtensionApplier implements IAspect {
   constructor(private internalExtension: NodejsInternalExtension) {}
   public visit(node: Construct): void {
     if (node instanceof NodejsFunction) {
-      const previousNodeOptions = getPreviousNodeOptions(node);
-      const requireExtensionOption = `--require /opt/${this.internalExtension.entryPoint}`;
-      const newNodeOptions = previousNodeOptions
-        ? [previousNodeOptions, requireExtensionOption].join(" ")
-        : requireExtensionOption;
-
-      node.addEnvironment("NODE_OPTIONS", newNodeOptions);
-      node.addLayers(this.internalExtension.layerVersion);
+      applyNodejsInternalExtensionToNodeJsFunction(
+        node,
+        this.internalExtension,
+      );
     }
   }
 }
