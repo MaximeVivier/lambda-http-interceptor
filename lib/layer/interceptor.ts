@@ -1,6 +1,7 @@
 import { ResponseTransformer, rest } from "msw";
 import { setupServer } from "msw/node";
 import { GetItemCommand } from "dynamodb-toolbox";
+import debug from "debug";
 import { lambdaHttpInterceptorConfigEntity } from "../sdk/lambdaHttpInterceptorConfigEntity";
 import {
   getEnv,
@@ -9,6 +10,8 @@ import {
   HTTP_INTERCEPTOR_TABLE_NAME,
   MockConfig,
 } from "../sdk";
+
+const log = debug("http-interceptor");
 
 const fetchInterceptorConfig = async (): Promise<MockConfig[] | undefined> => {
   const command = new GetItemCommand(lambdaHttpInterceptorConfigEntity, {
@@ -37,7 +40,7 @@ const server = setupServer(
       return req.passthrough();
     }
 
-    console.log("request intercepted", request);
+    log("request intercepted: ", JSON.stringify(request, null, 2));
 
     const mockConfigs = await fetchInterceptorConfig();
     if (!mockConfigs) {
@@ -47,6 +50,7 @@ const server = setupServer(
     const response = getRequestResponse(request, mockConfigs);
 
     if (response.passThrough === true) {
+      log(`letting ${request.method} ${request.url} pass through`);
       return req.passthrough();
     }
 
@@ -58,6 +62,11 @@ const server = setupServer(
       ),
     ].filter((transformer): transformer is ResponseTransformer =>
       Boolean(transformer),
+    );
+
+    log(
+      `responding to ${request.method} ${request.url}`,
+      JSON.stringify(response, null, 2),
     );
 
     return res(...responseTransformers);
