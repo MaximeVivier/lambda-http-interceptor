@@ -1,7 +1,7 @@
-import { Construct } from "constructs";
-import { Aspects, IAspect, Stack } from "aws-cdk-lib";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { CfnFunction, LayerVersion } from "aws-cdk-lib/aws-lambda";
+import { Construct } from 'constructs';
+import { Aspects, IAspect, Stack } from 'aws-cdk-lib';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { CfnFunction, LayerVersion } from 'aws-cdk-lib/aws-lambda';
 
 export interface NodejsInternalExtension {
   layerVersion: LayerVersion;
@@ -25,10 +25,10 @@ export const applyNodejsInternalExtensionToNodeJsFunction = (
   const previousNodeOptions = getPreviousNodeOptions(nodeJsFunction);
   const requireExtensionOption = `--require /opt/${internalExtension.entryPoint}`;
   const newNodeOptions = previousNodeOptions
-    ? [previousNodeOptions, requireExtensionOption].join(" ")
+    ? [previousNodeOptions, requireExtensionOption].join(' ')
     : requireExtensionOption;
 
-  nodeJsFunction.addEnvironment("NODE_OPTIONS", newNodeOptions);
+  nodeJsFunction.addEnvironment('NODE_OPTIONS', newNodeOptions);
   nodeJsFunction.addLayers(internalExtension.layerVersion);
 };
 

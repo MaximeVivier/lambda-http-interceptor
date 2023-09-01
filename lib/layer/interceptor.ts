@@ -1,17 +1,17 @@
-import { ResponseTransformer, rest } from "msw";
-import { setupServer } from "msw/node";
-import { GetItemCommand } from "dynamodb-toolbox";
-import debug from "debug";
-import { lambdaHttpInterceptorConfigEntity } from "../sdk/lambdaHttpInterceptorConfigEntity";
+import { ResponseTransformer, rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { GetItemCommand } from 'dynamodb-toolbox';
+import debug from 'debug';
+import { lambdaHttpInterceptorConfigEntity } from '../sdk/lambdaHttpInterceptorConfigEntity';
 import {
   getEnv,
   getRequestResponse,
   AWS_LAMBDA_FUNCTION_NAME,
   HTTP_INTERCEPTOR_TABLE_NAME,
   MockConfig,
-} from "../sdk";
+} from '../sdk';
 
-const log = debug("http-interceptor");
+const log = debug('http-interceptor');
 
 const fetchInterceptorConfig = async (): Promise<MockConfig[] | undefined> => {
   const command = new GetItemCommand(lambdaHttpInterceptorConfigEntity, {
@@ -24,7 +24,7 @@ const fetchInterceptorConfig = async (): Promise<MockConfig[] | undefined> => {
 };
 
 const server = setupServer(
-  rest.all("*", async (req, res, ctx) => {
+  rest.all('*', async (req, res, ctx) => {
     const request = {
       url: req.url.toString(),
       method: req.method,
@@ -40,7 +40,7 @@ const server = setupServer(
       return req.passthrough();
     }
 
-    log("request intercepted: ", JSON.stringify(request, null, 2));
+    log('request intercepted: ', JSON.stringify(request, null, 2));
 
     const mockConfigs = await fetchInterceptorConfig();
     if (!mockConfigs) {
@@ -73,4 +73,4 @@ const server = setupServer(
   }),
 );
 
-server.listen({ onUnhandledRequest: "bypass" });
+server.listen({ onUnhandledRequest: 'bypass' });
