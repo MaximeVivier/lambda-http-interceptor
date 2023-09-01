@@ -1,13 +1,13 @@
-import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     include: [
-      "**/*.{integration-test,integration-spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      '**/*.{integration-test,integration-spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
-    setupFiles: ["setupIntegration"],
+    setupFiles: ['setupIntegration'],
     testTimeout: 100000,
     hookTimeout: 100000,
   },

@@ -1,4 +1,4 @@
-import { MockConfig, Request } from "./types";
+import { MockConfig, Request } from './types';
 
 const urlMatch = (
   requestUrl: string,
@@ -11,7 +11,7 @@ const urlMatch = (
     return true;
   }
   if (
-    configUrl.endsWith("*") &&
+    configUrl.endsWith('*') &&
     requestUrl.startsWith(configUrl.slice(0, -1))
   ) {
     return true;

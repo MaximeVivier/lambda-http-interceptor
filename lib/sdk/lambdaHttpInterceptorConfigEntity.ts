@@ -11,13 +11,16 @@ import {
   PutItemInput,
   FormattedItem,
   PutItemCommand,
-} from "dynamodb-toolbox";
+} from 'dynamodb-toolbox';
 
-import { lambdaHttpInterceptorTable } from "./table";
+import { lambdaHttpInterceptorTable } from './table';
+import { TTL_ATTRIBUTE_NAME } from '../constants';
+
+const oneHourInSeconds = 3600;
 
 const lambdaHttpInterceptorConfigSchema = schema({
-  lambdaName: string().key().savedAs("PK"),
-  entityName: string().key().const("lambdaHttpInterceptorConfig").savedAs("SK"),
+  lambdaName: string().key().savedAs('PK'),
+  entityName: string().key().const('lambdaHttpInterceptorConfig').savedAs('SK'),
   mockConfigs: list(
     map({
       url: string().optional(),
@@ -38,10 +41,13 @@ const lambdaHttpInterceptorConfigSchema = schema({
       ]),
     }),
   ),
+  [TTL_ATTRIBUTE_NAME]: number().default(
+    () => Math.ceil(new Date().getTime() / 1000) + oneHourInSeconds,
+  ),
 });
 
 export const lambdaHttpInterceptorConfigEntity = new EntityV2({
-  name: "LambdaHttpInterceptorConfigEntity",
+  name: 'LambdaHttpInterceptorConfigEntity',
   table: lambdaHttpInterceptorTable,
   schema: lambdaHttpInterceptorConfigSchema,
 });
