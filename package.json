@@ -1,6 +1,6 @@
 {
   "name": "lambda-http-interceptor",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
@@ -11,7 +11,8 @@
     "test:unit": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts --passWithNoTests",
     "deploy-test-stack": "cd test; cdk deploy",
-    "synth-test-stack": "cd test; cdk synth"
+    "synth-test-stack": "cd test; cdk synth",
+    "publish-package": "pnpm run build; npm publish"
   },
   "devDependencies": {
     "@aws-cdk/aws-apigatewayv2-alpha": "2.88.0-alpha.0",
