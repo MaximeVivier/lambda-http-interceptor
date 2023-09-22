@@ -41,7 +41,8 @@
     "@swarmion/serverless-helpers": "^0.28.2",
     "debug": "^4.3.4",
     "dynamodb-toolbox": "1.0.0-beta.0",
-    "msw": "^1.2.3"
+    "msw": "^1.2.3",
+    "ulid": "^2.3.0"
   },
   "packageManager": "pnpm@8.4.0",
   "peerDependencies": {
