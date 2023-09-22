@@ -1,6 +1,10 @@
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
-import { PARTITION_KEY, SORT_KEY, TTL_ATTRIBUTE_NAME } from './constants';
+import {
+  PARTITION_KEY,
+  SORT_KEY,
+  TTL_ATTRIBUTE_NAME,
+} from './dynamoDbToolboxUtils';
 import { HttpInterceptorExtension } from './HttpInterceptorExtension';
 
 type Props = {
