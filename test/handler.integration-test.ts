@@ -2,7 +2,10 @@ import fetch from 'node-fetch';
 import { expect, describe, it } from 'vitest';
 
 import { TEST_ENV_VARS } from './testEnvVars';
-import { setupLambdaHttpInterceptorConfig } from '../lib/sdk';
+import {
+  fetchInterceptedCalls,
+  setupLambdaHttpInterceptorConfig,
+} from '../lib/sdk';
 
 describe('hello function', () => {
   it('returns a 200', async () => {
@@ -32,6 +35,13 @@ describe('hello function', () => {
         method: 'post',
       },
     );
+
+    const resp = await fetchInterceptedCalls(
+      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
+    );
+    resp.forEach(callParams => {
+      console.log(callParams);
+    });
     expect(response.status).toBe(200);
   });
 });
