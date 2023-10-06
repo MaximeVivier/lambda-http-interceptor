@@ -2,6 +2,7 @@ export { setupLambdaHttpInterceptorConfig } from './setupLambdaHttpInterceptorCo
 export { LambdaHttpInterceptorConfig } from './lambdaHttpInterceptorConfigEntity';
 export { fetchInterceptedCalls } from './fetchInterceptedCalls';
 export { putInterceptedCall } from './putInterceptedCall';
+export { cleanInterceptedCalls } from './cleanInterceptedCalls';
 export * from './getEnv';
 export * from './requestMatchConfig';
 export * from './getFirstMatchingConfig';
