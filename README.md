@@ -223,7 +223,15 @@ The method to be given in the method prop needs to be one the [standard HTTP req
 The response status to be given in the params needs to be one the [standard HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
 
 
-## 
+### Multiple lambda triggers into a testing suite or across testing suites
+A `beforeEach` for setup and a `afterEach` with the cleaning method are required in order to make assertions independently between each test of a suite.
+
+For avoiding collisions between testing suites, if the cleaning method is not called in a test for a specific reason, the method needs to be called in a `afterAll`.
+
+And all tests dealing with the same lambda need to be performed in band, they can't be performed in parallel.
+
+PUT EXAMPLE CODE OF THE TEST FILE
+
 
 ## Coming next
 
