@@ -9,6 +9,7 @@ import {
   AWS_LAMBDA_FUNCTION_NAME,
   HTTP_INTERCEPTOR_TABLE_NAME,
   MockConfig,
+  putInterceptedCall,
 } from '../sdk';
 
 const log = debug('http-interceptor');
@@ -25,12 +26,14 @@ const fetchInterceptorConfig = async (): Promise<MockConfig[] | undefined> => {
 
 const server = setupServer(
   rest.all('*', async (req, res, ctx) => {
+    try {
     const request = {
       url: req.url.toString(),
       method: req.method,
       headers: req.headers.all(),
       body: await req.text(),
     };
+
     if (
       request.url.match(/dynamodb\..*\.amazonaws.com/) &&
       request.body.match(
@@ -43,21 +46,27 @@ const server = setupServer(
     log('request intercepted: ', JSON.stringify(request, null, 2));
 
     const mockConfigs = await fetchInterceptorConfig();
-    if (!mockConfigs) {
+      if (mockConfigs === undefined) {
       return req.passthrough();
     }
 
-    const response = getRequestResponse(request, mockConfigs);
+      const mockResponse = getRequestResponse(request, mockConfigs);
 
-    if (response.passThrough === true) {
+      if (mockResponse.isOneOfConfiguredMocks) {
+        await putInterceptedCall({
+          lambdaName: getEnv(AWS_LAMBDA_FUNCTION_NAME),
+          callParams: request,
+        });
+      }
+      if (mockResponse.passThrough) {
       log(`letting ${request.method} ${request.url} pass through`);
       return req.passthrough();
     }
 
     const responseTransformers = [
-      ctx.status(response.status),
-      response.body && ctx.text(response.body),
-      ...Object.entries(response.headers ?? {}).map(
+        ctx.status(mockResponse.status),
+        mockResponse.body && ctx.text(mockResponse.body),
+        ...Object.entries(mockResponse.headers ?? {}).map(
         ([key, value]) => value && ctx.set(key, value),
       ),
     ].filter((transformer): transformer is ResponseTransformer =>
@@ -66,10 +75,14 @@ const server = setupServer(
 
     log(
       `responding to ${request.method} ${request.url}`,
-      JSON.stringify(response, null, 2),
+        JSON.stringify(mockResponse, null, 2),
     );
 
     return res(...responseTransformers);
+    } catch (err) {
+      console.error('Extension http interceptor ERROR:', err);
+      return res();
+    }
   }),
 );
 
