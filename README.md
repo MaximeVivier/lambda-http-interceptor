@@ -39,7 +39,7 @@ export class MyStack extends Stack {
 }
 ```
 
-After Deploying that part, everything is setup on the stack to perform integration tests.
+After deploying that part, everything is setup on the stack to perform integration tests.
 
 ```typescript
 import fetch from "node-fetch";
@@ -79,14 +79,16 @@ describe("hello function", () => {
 });
 ```
 
->To resolve <table-name-from-construct> and <myLambdaFunctionThatMakesExternalCalls-name> easily, we recommend the usage of [@swarmion/integration-tests](https://www.swarmion.dev/docs/how-to-guides/use-integration-tests/)
+>To resolve `<table-name-from-construct>` and `<myLambdaFunctionThatMakesExternalCalls-name>` easily, we recommend the usage of [@swarmion/integration-tests](https://www.swarmion.dev/docs/how-to-guides/use-integration-tests/)
 
 ## How it works
 
 ### The CDK Construct
 
 The `HttpInterceptor` needs to be instantiated inside a stack. It contains what is necessary to mock calls:
-- an extension 
+- a DynamoDB table to store and fetch all calls to intercept and what to respond
+- an extension to intercept these calls
+- an aspect that applies this extension to every NodeJSFunction included in the stack
 
 Then the method `applyHttpInterceptor` needs to be used to link any Lambda to the extension that has been set.
 This method can be called with any construct and it will attach the extension to every NodejsFunction Construct nested inside it. Therefore, it can also be called with `this` in the constructor of the stack like the following.
@@ -231,7 +233,7 @@ For avoiding collisions between testing suites, if the cleaning method is not ca
 
 And all tests dealing with the same lambda need to be performed in band, they can't be performed in parallel.
 
-PUT EXAMPLE CODE OF THE TEST FILE
+An example of the code described here is available in the following section.
 
 ### Making expects on the intercepted calls
 
