@@ -5,9 +5,10 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsc && pnpm build:interceptor",
+    "build": "rm -rf dist && tsc -p ./tsconfig.build.json && pnpm build:interceptor",
     "build:interceptor": "./node_modules/.bin/esbuild --bundle --platform=node --main-fields=module,main --sourcemap lib/layer/interceptor.ts --outfile='./dist/layer/interceptor.js'",
     "watch": "tsc -w",
+    "test:type": "tsc --noEmit",
     "test:unit": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts --passWithNoTests",
     "deploy-test-stack": "cd test; cdk deploy",
@@ -41,7 +42,8 @@
     "@swarmion/serverless-helpers": "^0.28.2",
     "debug": "^4.3.4",
     "dynamodb-toolbox": "1.0.0-beta.0",
-    "msw": "^1.2.3"
+    "msw": "^1.2.3",
+    "ulid": "^2.3.0"
   },
   "packageManager": "pnpm@8.4.0",
   "peerDependencies": {

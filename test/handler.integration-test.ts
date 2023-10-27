@@ -1,11 +1,15 @@
 import fetch from 'node-fetch';
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, beforeAll, afterEach, afterAll } from 'vitest';
 
 import { TEST_ENV_VARS } from './testEnvVars';
-import { setupLambdaHttpInterceptorConfig } from '../lib/sdk';
+import {
+  cleanInterceptedCalls,
+  setupLambdaHttpInterceptorConfig,
+  waitForNumberOfInterceptedCalls,
+} from '../lib/sdk';
 
 describe('hello function', () => {
-  it('returns a 200', async () => {
+  beforeAll(async () => {
     await setupLambdaHttpInterceptorConfig({
       lambdaName: TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
       mockConfigs: [
@@ -26,12 +30,43 @@ describe('hello function', () => {
         },
       ],
     });
+  });
+  afterEach(async () => {
+    await cleanInterceptedCalls(
+      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
+    );
+  });
+  it('returns 200 and catches 2 requests', async () => {
     const response = await fetch(
       `${TEST_ENV_VARS.API_URL}/make-external-call`,
       {
         method: 'post',
       },
     );
+
+    const resp = await waitForNumberOfInterceptedCalls(
+      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
+      2,
+      5000,
+    );
     expect(response.status).toBe(200);
+    expect(resp.length).toBe(2);
+  });
+  it('returns also 200 and catches also 2 requests', async () => {
+    const response = await fetch(
+      `${TEST_ENV_VARS.API_URL}/make-external-call`,
+      {
+        method: 'post',
+      },
+    );
+
+    const resp = await waitForNumberOfInterceptedCalls(
+      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
+      2,
+      5000,
+    );
+
+    expect(response.status).toBe(200);
+    expect(resp.length).toBe(2);
   });
 });

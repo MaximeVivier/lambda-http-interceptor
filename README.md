@@ -223,9 +223,96 @@ The method to be given in the method prop needs to be one the [standard HTTP req
 The response status to be given in the params needs to be one the [standard HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status).
 
 
-## 
+### Multiple lambda triggers into a testing suite or across testing suites
+
+A `beforeEach` for setup and a `afterEach` with the cleaning method are required in order to make assertions independently between each test of a suite.
+
+For avoiding collisions between testing suites, if the cleaning method is not called in a test for a specific reason, the method needs to be called in a `afterAll`.
+
+And all tests dealing with the same lambda need to be performed in band, they can't be performed in parallel.
+
+PUT EXAMPLE CODE OF THE TEST FILE
+
+### Making expects on the intercepted calls
+
+The method waitForNumberOfInterceptedCalls is used to wait for all intercepted calls when they have been done. It needs configuration about the maximum time to wait before throwing because all supposed intercepted calls have been intercepted.
+
+```typescript
+import fetch from "node-fetch";
+import { expect, describe, it } from "vitest";
+
+process.env.HTTP_INTERCEPTOR_TABLE_NAME = '<table-name-from-construct>'
+
+import { setupLambdaHttpInterceptorConfig } from "http-lambda-interceptor";
+
+import { triggerMyLambdaFunctionThatMakesExternalCalls } from './utils';
+
+describe("hello function", () => {
+  it("returns a 200", async () => {
+    await setupLambdaHttpInterceptorConfig({
+      lambdaName: '<myLambdaFunctionThatMakesExternalCalls-name>',
+      mockConfigs: [
+        {
+          url: "https://api-1/*",
+          response: {
+            status: 404,
+            body: JSON.stringify({
+              errorMessage: "Not found",
+            }),
+          },
+        },
+        {
+          url: "https://api-2/path",
+          response: {
+            passThrough: true,
+          },
+        },
+      ],
+    });
+    const response = await triggerMyLambdaFunctionThatMakesExternalCalls();
+    expect(response.status).toBe(200);
+  });
+  afterEach(async () => {
+    await cleanInterceptedCalls('<myLambdaFunctionThatMakesExternalCalls-name>');
+  });
+  it('returns 200 and catches 2 requests', async () => {
+    const response = await fetch(
+      `${TEST_ENV_VARS.API_URL}/make-external-call`,
+      {
+        method: 'post',
+      },
+    );
+
+    const resp = await waitForNumberOfInterceptedCalls(
+      '<myLambdaFunctionThatMakesExternalCalls-name>',
+      2,
+      5000,
+    );
+    expect(response.status).toBe(200);
+    expect(resp.length).toBe(2);
+  });
+  it('returns also 200 and catches also 2 requests', async () => {
+    const response = await fetch(
+      `${TEST_ENV_VARS.API_URL}/make-external-call`,
+      {
+        method: 'post',
+      },
+    );
+
+    const resp = await waitForNumberOfInterceptedCalls(
+      '<myLambdaFunctionThatMakesExternalCalls-name>',
+      2,
+      5000,
+    );
+
+    expect(response.status).toBe(200);
+    expect(resp.length).toBe(2);
+    // resp contains all information about the calls made to to external API endpoints mocked
+    // Expects can be made on the content of the calls made once received
+  });
+});
+```
 
 ## Coming next
 
-Making assertions on how many times endpoints have been called and with what body will soon be available.
-
+Having a class to instantiate in each test suite that will allow independent testing across all tests suites even on the same lambda.

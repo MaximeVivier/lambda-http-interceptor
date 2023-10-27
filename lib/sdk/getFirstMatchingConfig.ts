@@ -12,5 +12,16 @@ export const getFirstMatchingConfig = (
 export const getRequestResponse = (
   request: Request,
   configs: MockConfig[],
-): MockConfig['response'] =>
-  getFirstMatchingConfig(request, configs)?.response ?? { passThrough: true };
+): MockConfig['response'] & { isOneOfConfiguredMocks: boolean } => {
+  const firstMatchingConfig = getFirstMatchingConfig(request, configs);
+  if (firstMatchingConfig === undefined) {
+    return {
+      passThrough: true,
+      isOneOfConfiguredMocks: false,
+    };
+  }
+  return {
+    ...firstMatchingConfig.response,
+    isOneOfConfiguredMocks: true,
+  };
+};

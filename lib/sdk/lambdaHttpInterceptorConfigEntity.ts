@@ -10,13 +10,10 @@ import {
   anyOf,
   PutItemInput,
   FormattedItem,
-  PutItemCommand,
 } from 'dynamodb-toolbox';
 
 import { lambdaHttpInterceptorTable } from './table';
-import { TTL_ATTRIBUTE_NAME } from '../constants';
-
-const oneHourInSeconds = 3600;
+import { TTL_ATTRIBUTE_NAME, getDefaultTtl } from '../dynamoDbToolboxUtils';
 
 const lambdaHttpInterceptorConfigSchema = schema({
   lambdaName: string().key().savedAs('PK'),
@@ -41,9 +38,7 @@ const lambdaHttpInterceptorConfigSchema = schema({
       ]),
     }),
   ),
-  [TTL_ATTRIBUTE_NAME]: number().default(
-    () => Math.ceil(new Date().getTime() / 1000) + oneHourInSeconds,
-  ),
+  [TTL_ATTRIBUTE_NAME]: number().default(getDefaultTtl),
 });
 
 export const lambdaHttpInterceptorConfigEntity = new EntityV2({

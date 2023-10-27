@@ -18,6 +18,7 @@ class HttpInterceptorApplier implements IAspect {
         this.httpInterceptor.table.tableName,
       );
       this.httpInterceptor.table.grantReadData(node);
+      this.httpInterceptor.table.grantWriteData(node);
     }
   }
 }
