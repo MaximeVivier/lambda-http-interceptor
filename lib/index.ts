@@ -1,3 +1,3 @@
-export * from './applyHttpInterceptor';
-export * from './HttpInterceptorExtension';
-export * from './HttpInterceptor';
+export * from './cdk/applyHttpInterceptor';
+export * from './cdk/HttpInterceptorExtension';
+export * from './cdk/HttpInterceptor';

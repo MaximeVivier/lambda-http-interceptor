@@ -4,7 +4,7 @@ import {
   PARTITION_KEY,
   SORT_KEY,
   TTL_ATTRIBUTE_NAME,
-} from './dynamoDbToolboxUtils';
+} from '../dynamoDbToolboxUtils';
 import { HttpInterceptorExtension } from './HttpInterceptorExtension';
 
 type Props = {
