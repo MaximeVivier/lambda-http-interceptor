@@ -12,8 +12,11 @@ import {
   FormattedItem,
 } from 'dynamodb-toolbox';
 
-import { lambdaHttpInterceptorTable } from './table';
-import { TTL_ATTRIBUTE_NAME, getDefaultTtl } from '../dynamoDbToolboxUtils';
+import { lambdaHttpInterceptorTable } from '../../lambdaHttpInterceptorTable';
+import {
+  TTL_ATTRIBUTE_NAME,
+  getDefaultTtl,
+} from '../../../../dynamoDbToolboxUtils';
 
 const lambdaHttpInterceptorConfigSchema = schema({
   lambdaName: string().key().savedAs('PK'),

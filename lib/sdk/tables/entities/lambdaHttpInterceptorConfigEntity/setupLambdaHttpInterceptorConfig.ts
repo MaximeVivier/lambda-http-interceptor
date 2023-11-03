@@ -2,7 +2,7 @@ import { PutItemCommand } from 'dynamodb-toolbox';
 import {
   lambdaHttpInterceptorConfigEntity,
   LambdaHttpInterceptorConfigInput,
-} from './lambdaHttpInterceptorConfigEntity';
+} from './entity';
 
 export const setupLambdaHttpInterceptorConfig = async (
   params: LambdaHttpInterceptorConfigInput,
