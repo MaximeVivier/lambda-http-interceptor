@@ -4,13 +4,13 @@ import { expect, describe, it, beforeAll, afterEach, afterAll } from 'vitest';
 import { TEST_ENV_VARS } from './testEnvVars';
 import {
   cleanInterceptedCalls,
-  setupLambdaHttpInterceptorConfig,
+  putLambdaHttpInterceptorConfig,
   waitForNumberOfInterceptedCalls,
 } from '../lib/sdk';
 
 describe('hello function', () => {
   beforeAll(async () => {
-    await setupLambdaHttpInterceptorConfig({
+    await putLambdaHttpInterceptorConfig({
       lambdaName: TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
       mockConfigs: [
         {

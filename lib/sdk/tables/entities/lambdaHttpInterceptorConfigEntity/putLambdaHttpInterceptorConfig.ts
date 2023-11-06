@@ -4,7 +4,7 @@ import {
   LambdaHttpInterceptorConfigInput,
 } from './entity';
 
-export const setupLambdaHttpInterceptorConfig = async (
+export const putLambdaHttpInterceptorConfig = async (
   params: LambdaHttpInterceptorConfigInput,
 ) => {
   const command = new PutItemCommand(lambdaHttpInterceptorConfigEntity, params);
