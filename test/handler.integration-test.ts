@@ -2,39 +2,33 @@ import fetch from 'node-fetch';
 import { expect, describe, it, beforeAll, afterEach, afterAll } from 'vitest';
 
 import { TEST_ENV_VARS } from './testEnvVars';
-import {
-  cleanInterceptedCalls,
-  putLambdaHttpInterceptorConfig,
-  waitForNumberOfInterceptedCalls,
-} from '../lib/sdk';
+import { HttpLambdaInterceptorClient } from '../lib/sdk';
 
 describe('hello function', () => {
+  const interceptorClient = new HttpLambdaInterceptorClient(
+    TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
+  );
   beforeAll(async () => {
-    await putLambdaHttpInterceptorConfig({
-      lambdaName: TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
-      mockConfigs: [
-        {
-          url: 'https://api.coindesk.com/*',
-          response: {
-            status: 404,
-            body: JSON.stringify({
-              errorMessage: 'Not found',
-            }),
-          },
+    await interceptorClient.createConfigs([
+      {
+        url: 'https://api.coindesk.com/*',
+        response: {
+          status: 404,
+          body: JSON.stringify({
+            errorMessage: 'Not found',
+          }),
         },
-        {
-          url: 'https://catfact.ninja/fact',
-          response: {
-            passThrough: true,
-          },
+      },
+      {
+        url: 'https://catfact.ninja/fact',
+        response: {
+          passThrough: true,
         },
-      ],
-    });
+      },
+    ]);
   });
   afterEach(async () => {
-    await cleanInterceptedCalls(
-      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
-    );
+    await interceptorClient.cleanInterceptedCalls();
   });
   it('returns 200 and catches 2 requests', async () => {
     const response = await fetch(
@@ -44,11 +38,10 @@ describe('hello function', () => {
       },
     );
 
-    const resp = await waitForNumberOfInterceptedCalls(
-      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
-      2,
-      5000,
-    );
+    const resp = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
+    });
     expect(response.status).toBe(200);
     expect(resp.length).toBe(2);
   });
@@ -60,11 +53,10 @@ describe('hello function', () => {
       },
     );
 
-    const resp = await waitForNumberOfInterceptedCalls(
-      TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
-      2,
-      5000,
-    );
+    const resp = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
+    });
 
     expect(response.status).toBe(200);
     expect(resp.length).toBe(2);
