@@ -4,7 +4,7 @@ import { expect, describe, it, beforeAll, afterEach, afterAll } from 'vitest';
 import { TEST_ENV_VARS } from './testEnvVars';
 import { HttpLambdaInterceptorClient } from '../lib/sdk';
 
-describe('hello function', () => {
+describe('Multiple synchronous calls in band', () => {
   const interceptorClient = new HttpLambdaInterceptorClient(
     TEST_ENV_VARS.MAKE_EXTERNAL_CALLS_FUNCTION_NAME,
   );
