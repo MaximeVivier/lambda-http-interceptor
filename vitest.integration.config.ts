@@ -10,5 +10,7 @@ export default defineConfig({
     setupFiles: ['setupIntegration'],
     testTimeout: 100000,
     hookTimeout: 100000,
+    sequence: { concurrent: false },
+    threads: false,
   },
 });
