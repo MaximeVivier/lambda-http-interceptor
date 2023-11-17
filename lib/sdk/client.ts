@@ -19,6 +19,7 @@ export class HttpLambdaInterceptorClient {
    *
    * @param configs - the configs to use for mocking http calls
    *
+   * It creates the config if it doesn't exists. It updates the config if it already exists.
    */
   async createConfigs(
     configs: LambdaHttpInterceptorConfigInput['mockConfigs'],
@@ -40,10 +41,14 @@ export class HttpLambdaInterceptorClient {
   }
 
   /**
-   * Poll all intercepted calls of this lambda.
+   * Poll and returns all intercepted calls of this lambda.
    *
-   * @returns intercepted calls of this lambda. Assertions can be made on the results of this method that returns what has been intercepted based on the config created in the first place.
-   * If the @numberOfCallsToExpect is strictly greater than the number of configured calls intercepted, this method will timeout. The default timeout used, if no @timeout is specified, is 10 seconds.
+   * @param numberOfCallsToExpect number
+   * @param timeout number in milliseconds - default value to 10000ms
+   * @returns InterceptedCallParams
+   *
+   * Returns intercepted calls of this lambda. Assertions can be made on the results of this method that returns what has been intercepted based on the config created in the first place.
+   * If the numberOfCallsToExpect is strictly greater than the number of configured calls intercepted, this method will timeout.
    */
   async pollInterceptedCalls(
     params: PollInterceptedCallsParams,
