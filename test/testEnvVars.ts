@@ -5,6 +5,7 @@ export type TestEnvVarsType = {
   API_URL: string;
   HTTP_INTERCEPTOR_TABLE_NAME: string;
   MAKE_EXTERNAL_CALLS_FUNCTION_NAME: string;
+  TEST_STACK_EVENT_BUS_NAME: string
 };
 
 export const TEST_ENV_VARS = getTestEnvVars<TestEnvVarsType>();

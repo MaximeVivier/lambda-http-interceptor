@@ -9,6 +9,9 @@ import { getCdkHandlerPath } from '@swarmion/serverless-helpers';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { TestEnvVar } from '@swarmion/integration-tests';
 import { HTTP_INTERCEPTOR_TABLE_NAME } from '../lib/sdk';
+import { EventBus, Rule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+import { testEventPattern } from './testEvent';
 
 export class LambdaHttpInterceptorTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,6 +21,12 @@ export class LambdaHttpInterceptorTestStack extends Stack {
 
     new TestEnvVar(this, 'API_URL', {
       value: httpApi.url as string,
+    });
+
+    const eventBus = new EventBus(this, 'TestStackEventBus');
+
+    new TestEnvVar(this, 'TEST_STACK_EVENT_BUS_NAME', {
+      value: eventBus.eventBusName,
     });
 
     const interceptor = new HttpInterceptor(this, 'HttpInterceptor');
@@ -39,6 +48,12 @@ export class LambdaHttpInterceptorTestStack extends Stack {
       },
     );
     applyHttpInterceptor(makeExternalCallFunction, interceptor);
+
+    new Rule(this, 'RuleTestStack', {
+      eventBus,
+      targets: [new LambdaFunction(makeExternalCallFunction)],
+      eventPattern: testEventPattern,
+    });
 
     new TestEnvVar(this, 'MAKE_EXTERNAL_CALLS_FUNCTION_NAME', {
       value: makeExternalCallFunction.functionName,
