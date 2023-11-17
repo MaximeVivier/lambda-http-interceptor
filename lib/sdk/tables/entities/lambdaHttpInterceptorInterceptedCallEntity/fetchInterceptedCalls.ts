@@ -2,11 +2,11 @@ import {
   InterceptedCall,
   interceptedCallEntity,
   interceptedCallEntityStartName,
-} from './lambdaHttpInterceptorInterceptedCallEntity';
-import { InterceptedCallParams } from './types';
+} from './entity';
+import { InterceptedCallParams } from '../../../types';
 import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
-import { PARTITION_KEY, SORT_KEY } from '../dynamoDbToolboxUtils';
-import { lambdaHttpInterceptorTable } from './table';
+import { PARTITION_KEY, SORT_KEY } from '../../../../dynamoDbToolboxUtils';
+import { lambdaHttpInterceptorTable } from '../../lambdaHttpInterceptorTable';
 
 export const fetchInterceptedCalls = async (
   lambdaName: string,

@@ -1,5 +1,5 @@
-import { LambdaHttpInterceptorConfig } from './lambdaHttpInterceptorConfigEntity';
-import { InterceptedCall } from './lambdaHttpInterceptorInterceptedCallEntity';
+import { LambdaHttpInterceptorConfig } from './tables/entities/lambdaHttpInterceptorConfigEntity/entity';
+import { InterceptedCall } from './tables/entities/lambdaHttpInterceptorInterceptedCallEntity/entity';
 
 export type MockConfig = LambdaHttpInterceptorConfig['mockConfigs'][number];
 export type InterceptedCallParams = InterceptedCall['callParams'];

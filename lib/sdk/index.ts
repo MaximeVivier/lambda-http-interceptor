@@ -1,10 +1,6 @@
-export { setupLambdaHttpInterceptorConfig } from './setupLambdaHttpInterceptorConfig';
-export { LambdaHttpInterceptorConfig } from './lambdaHttpInterceptorConfigEntity';
-export { fetchInterceptedCalls } from './fetchInterceptedCalls';
-export { putInterceptedCall } from './putInterceptedCall';
-export { cleanInterceptedCalls } from './cleanInterceptedCalls';
-export { waitForNumberOfInterceptedCalls } from './waitForNumberOfInterceptedCalls';
+export * from './tables';
 export * from './getEnv';
 export * from './requestMatchConfig';
 export * from './getFirstMatchingConfig';
 export * from './types';
+export * from './client';

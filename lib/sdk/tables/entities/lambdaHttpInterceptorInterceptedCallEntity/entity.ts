@@ -10,8 +10,11 @@ import {
 } from 'dynamodb-toolbox';
 import { ulid } from 'ulid';
 
-import { lambdaHttpInterceptorTable } from './table';
-import { TTL_ATTRIBUTE_NAME, getDefaultTtl } from '../dynamoDbToolboxUtils';
+import { lambdaHttpInterceptorTable } from '../../lambdaHttpInterceptorTable';
+import {
+  TTL_ATTRIBUTE_NAME,
+  getDefaultTtl,
+} from '../../../../dynamoDbToolboxUtils';
 
 export const interceptedCallEntityStartName = 'interceptedCall';
 

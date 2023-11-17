@@ -1,5 +1,5 @@
 import { DeleteItemCommand } from 'dynamodb-toolbox';
-import { interceptedCallEntity } from './lambdaHttpInterceptorInterceptedCallEntity';
+import { interceptedCallEntity } from './entity';
 import { listInterceptedCallsPkAndSk } from './fetchInterceptedCalls';
 
 export const cleanInterceptedCalls = async (lambdaName: string) => {
