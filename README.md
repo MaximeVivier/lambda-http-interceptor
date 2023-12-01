@@ -14,7 +14,7 @@ The HttpInterceptor construct needs to be instantiated in the stack, or inside a
 import { Stack, StackProps } from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { HttpInterceptor, applyHttpInterceptor } from "http-lambda-interceptor";
+import { HttpInterceptor, applyHttpInterceptor } from "lambda-http-interceptor";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 
@@ -47,15 +47,16 @@ import { expect, describe, it } from "vitest";
 
 process.env.HTTP_INTERCEPTOR_TABLE_NAME = '<table-name-from-construct>'
 
-import { setupLambdaHttpInterceptorConfig } from "http-lambda-interceptor";
+import { HttpLambdaInterceptorClient } from "lambda-http-interceptor";
 
 import { triggerMyLambdaFunctionThatMakesExternalCalls } from './utils';
 
-describe("hello function", () => {
-  it("returns a 200", async () => {
-    await setupLambdaHttpInterceptorConfig({
-      lambdaName: '<myLambdaFunctionThatMakesExternalCalls-name>',
-      mockConfigs: [
+describe("my test", () => {
+  const interceptorClient = new HttpLambdaInterceptorClient(
+    '<myLambdaFunctionThatMakesExternalCalls-name>',
+  );
+  it("tests my lambda function", async () => {
+    await interceptorClient.createConfigs([
         {
           url: "https://api-1/*",
           response: {
@@ -71,10 +72,13 @@ describe("hello function", () => {
             passThrough: true,
           },
         },
-      ],
+      ]);
+    await triggerMyLambdaFunctionThatMakesExternalCalls();
+    const interceptedCalls = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
     });
-    const response = await triggerMyLambdaFunctionThatMakesExternalCalls();
-    expect(response.status).toBe(200);
+    expect(resp.interceptedCalls).toBe(2);
   });
 });
 ```
@@ -85,7 +89,7 @@ describe("hello function", () => {
 
 ### The CDK Construct
 
-The `HttpInterceptor` needs to be instantiated inside a stack. It contains what is necessary to mock calls:
+The `HttpInterceptor` construct needs to be instantiated inside a stack. It contains what is necessary to mock calls:
 - a DynamoDB table to store and fetch all calls to intercept and what to respond
 - an extension to intercept these calls
 - an aspect that applies this extension to every NodeJSFunction included in the stack
@@ -97,7 +101,7 @@ This method can be called with any construct and it will attach the extension to
 import { Stack, StackProps } from "aws-cdk-lib";
 
 import { Construct } from "constructs";
-import { HttpInterceptor, applyHttpInterceptor } from "http-lambda-interceptor";
+import { HttpInterceptor, applyHttpInterceptor } from "lambda-http-interceptor";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 
@@ -131,13 +135,13 @@ The other part of the library sits in the sdk used to perform the mocking part. 
 
 ### The SDK to use in integration tests
 
-The SDK part is the tooling used to configure the calls that need to be intercepted.
+The SDK part is the tooling used to configure the calls that need to be intercepted. It is encapsulated inside a class named HttpLambdaInterceptorClient.
 
 The extension also uses the SDK for fetching the configuration that are set in the tests.
 
 #### How to setup the calls configuration
 
-A method named `setupLambdaHttpInterceptorConfig` is used to set up the configuration that will be used by the lambda to handle the interception of the calls.
+The method named `createConfigs` of the client is used to set up the configuration that will be used by the lambda to handle the interception of the calls. When you call it, it creates the config if it doesn't exist yet, and it updates it if a record already exists. Thus it can be called once in a tets suite to setup the config for all tests in a before all. And it can also be called at the beginning of every test to have a specific config per tets.
 
 The only requirement for the lambda calls to be intercepted is that this setup needs to be done synchronously before the call of the lambda. You can trigger the lambda synchronously or asynchronously, but the setup of the config needs to be done before that.
 
@@ -176,7 +180,7 @@ type LambdaHttpInterceptorConfigInput = {
 };
 ```
 
-This is how to use the `setupLambdaHttpInterceptorConfig` method.
+This is how to use the `createConfigs` method.
 
 ```typescript
 import fetch from "node-fetch";
@@ -184,15 +188,13 @@ import { expect, describe, it } from "vitest";
 
 process.env.HTTP_INTERCEPTOR_TABLE_NAME = '<table-name-from-construct>'
 
-import { setupLambdaHttpInterceptorConfig } from "http-lambda-interceptor";
+import { setupLambdaHttpInterceptorConfig } from "lambda-http-interceptor";
 
 import { triggerMyLambdaFunctionThatMakesExternalCalls } from './utils';
 
-describe("hello function", () => {
-  it("returns a 200", async () => {
-    await setupLambdaHttpInterceptorConfig({
-      lambdaName: '<myLambdaFunctionThatMakesExternalCalls-name>',
-      mockConfigs: [
+describe("my test", () => {
+  it("tests my lambda function", async () => {
+    await interceptorClient.createConfigs([
         {
           url: "https://api-1/*",
           response: {
@@ -208,10 +210,13 @@ describe("hello function", () => {
             passThrough: true,
           },
         },
-      ],
+      ]);
+    await triggerMyLambdaFunctionThatMakesExternalCalls();
+    const interceptedCalls = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
     });
-    const response = await triggerMyLambdaFunctionThatMakesExternalCalls();
-    expect(response.status).toBe(200);
+    expect(resp.interceptedCalls).toBe(2);
   });
 });
 ```
@@ -231,13 +236,15 @@ A `beforeEach` for setup and a `afterEach` with the cleaning method are required
 
 For avoiding collisions between testing suites, if the cleaning method is not called in a test for a specific reason, the method needs to be called in a `afterAll`.
 
-And all tests dealing with the same lambda need to be performed in band, they can't be performed in parallel.
+And all tests dealing with the same lambda need to be performed sequentially, they can't be performed in parallel.
 
 An example of the code described here is available in the following section.
 
 ### Making expects on the intercepted calls
 
-The method waitForNumberOfInterceptedCalls is used to wait for all intercepted calls when they have been done. It needs configuration about the maximum time to wait before throwing because all supposed intercepted calls have been intercepted.
+The method `pollInterceptedCalls` is used to wait for all intercepted calls when they have been done. It needs configuration about the maximum time to wait before throwing because all supposed intercepted calls have been intercepted.
+
+The response contains all information about the calls made to to external API endpoints mocked. Thus assertions can be made on the content of the calls made once received.
 
 ```typescript
 import fetch from "node-fetch";
@@ -245,76 +252,53 @@ import { expect, describe, it } from "vitest";
 
 process.env.HTTP_INTERCEPTOR_TABLE_NAME = '<table-name-from-construct>'
 
-import { setupLambdaHttpInterceptorConfig } from "http-lambda-interceptor";
+import { setupLambdaHttpInterceptorConfig } from "lambda-http-interceptor";
 
 import { triggerMyLambdaFunctionThatMakesExternalCalls } from './utils';
 
-describe("hello function", () => {
-  it("returns a 200", async () => {
-    await setupLambdaHttpInterceptorConfig({
-      lambdaName: '<myLambdaFunctionThatMakesExternalCalls-name>',
-      mockConfigs: [
-        {
-          url: "https://api-1/*",
-          response: {
-            status: 404,
-            body: JSON.stringify({
-              errorMessage: "Not found",
-            }),
-          },
+describe("my test", () => {
+  const interceptorClient = new HttpLambdaInterceptorClient(
+    '<myLambdaFunctionThatMakesExternalCalls-name>',
+  );
+  beforeAll(async () => {
+    await interceptorClient.createConfigs([
+      {
+        url: "https://api-1/*",
+        response: {
+          status: 404,
+          body: JSON.stringify({
+            errorMessage: "Not found",
+          }),
         },
-        {
-          url: "https://api-2/path",
-          response: {
-            passThrough: true,
-          },
+      },
+      {
+        url: "https://api-2/path",
+        response: {
+          passThrough: true,
         },
-      ],
-    });
-    const response = await triggerMyLambdaFunctionThatMakesExternalCalls();
-    expect(response.status).toBe(200);
+      },
+    ]),
   });
   afterEach(async () => {
-    await cleanInterceptedCalls('<myLambdaFunctionThatMakesExternalCalls-name>');
+    await interceptorClient.cleanInterceptedCalls();
   });
-  it('returns 200 and catches 2 requests', async () => {
-    const response = await fetch(
-      `${TEST_ENV_VARS.API_URL}/make-external-call`,
-      {
-        method: 'post',
-      },
-    );
+  it('catches 2 requests', async () => {
+    await triggerMyLambdaFunctionThatMakesExternalCalls();
 
-    const resp = await waitForNumberOfInterceptedCalls(
-      '<myLambdaFunctionThatMakesExternalCalls-name>',
-      2,
-      5000,
-    );
-    expect(response.status).toBe(200);
-    expect(resp.length).toBe(2);
+    const interceptedCalls = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
+    });
+    expect(resp.interceptedCalls).toBe(2);
   });
-  it('returns also 200 and catches also 2 requests', async () => {
-    const response = await fetch(
-      `${TEST_ENV_VARS.API_URL}/make-external-call`,
-      {
-        method: 'post',
-      },
-    );
+  it('catches also 2 requests', async () => {
+    await triggerMyLambdaFunctionThatMakesExternalCalls();
 
-    const resp = await waitForNumberOfInterceptedCalls(
-      '<myLambdaFunctionThatMakesExternalCalls-name>',
-      2,
-      5000,
-    );
-
-    expect(response.status).toBe(200);
-    expect(resp.length).toBe(2);
-    // resp contains all information about the calls made to to external API endpoints mocked
-    // Expects can be made on the content of the calls made once received
+    const interceptedCalls = await interceptorClient.pollInterceptedCalls({
+      numberOfCallsToExpect: 2,
+      timeout: 5000,
+    });
+    expect(resp.interceptedCalls).toBe(2);
   });
 });
 ```
-
-## Coming next
-
-Having a class to instantiate in each test suite that will allow independent testing across all tests suites even on the same lambda.
